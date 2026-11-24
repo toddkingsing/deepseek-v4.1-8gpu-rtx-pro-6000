@@ -1,0 +1,6 @@
+FROM kingsing-cli-compat:20261119-literal-image
+COPY patch_bmm_bounded_v2.py /tmp/patch_bmm_bounded_v2.py
+RUN python3 /tmp/patch_bmm_bounded_v2.py \
+ && rm -f /tmp/patch_bmm_bounded_v2.py \
+ && python3 /opt/vllm-moet/dsv41_sm120/patch_flashinfer_b12x_moe_mega_sm120.py \
+ && TORCH_EXTENSIONS_DIR=/opt/vllm-moet/torch_extensions python3 -c "import sys; sys.path.insert(0, '/opt/vllm-moet/dsv41_sm120/b12x_moe_mega'); import b12x_moe_mega_sm120; b12x_moe_mega_sm120._ext(); print('Prebuilt b12x_moe_mega_sm120 OK')"

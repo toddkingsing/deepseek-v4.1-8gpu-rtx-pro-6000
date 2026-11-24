@@ -1,0 +1,198 @@
+{
+  "published_date": "2026-11-24",
+  "benchmark_date": "2026-11-22",
+  "scope": "Eight-GPU (TP4xPP2 + dual-NUMA CPU Engram offload) production deployment and lossless optimization evaluation (Speed9) of DeepSeek-V4.1-Flash-1017 official original weights on eight RTX PRO 6000 Blackwell Server Edition 96 GB GPUs.",
+  "hardware": {
+    "gpus": "8 x NVIDIA RTX PRO 6000 Blackwell Server Edition 96 GB (all PCIe 5.0 x16 under load)",
+    "cpu": "Dual Intel Xeon Platinum 8558P",
+    "host_memory": "512 GB DDR5 (499 GiB visible)",
+    "cpu_engram_gib_approx": 188.83,
+    "numa_mapping": "GPUs 0-3 (PP Stage 0, layers 0-19) on NUMA 0; GPUs 4-7 (PP Stage 1, layers 20-39 + DSpark) on NUMA 1",
+    "swap_policy": "systemd_scope_zero (memory.swap.max=0, memory.swap.current=0)"
+  },
+  "model": {
+    "repo": "deepseek-ai/DeepSeek-V4.1-Flash-1017",
+    "revision": "official-release",
+    "note": "Official original DeepSeek-V4.1-Flash-1017 weights. Refusal rates were not evaluated."
+  },
+  "runtime_identities": {
+    "baseline_20261119": {
+      "image_content_id": "sha256:f6577dc80d4dcf8b8c7667dee05520037bc528a1d8745dea9a254ad607cf86f1",
+      "inference_fingerprint": "2750cff194e130719a1cffd93050ee566cde37491848c91276ee55716860245c"
+    },
+    "selected_cand4_20261122": {
+      "name": "cand4-bmm48-cg-pipe2nccl-lmhead8",
+      "image_content_id": "sha256:ed4f73cce8c8718879b3bd06fc95221721942b212f0eb8cb2388cb2696a689aa",
+      "inference_fingerprint": "0b8c3a9c597e64b5c732ee980c72a832f8ccacfc4493ef67f688b4edbef2f1d3"
+    }
+  },
+  "short_prompt_t0": {
+    "protocol": "Temperature 0, thinking disabled, 1,024-token output budget. C1 reports median single-stream decode tok/s; C4/C8/C10 report median batch aggregate tok/s.",
+    "baseline": {
+      "c1": {
+        "chinese": {"tps": 266.32, "ttft_ms": 166.2, "eff": 2.688},
+        "code": {"tps": 320.20, "ttft_ms": 166.7, "eff": 3.264},
+        "english": {"tps": 251.09, "ttft_ms": 166.1, "eff": 2.562}
+      },
+      "c4": {"chinese": 519.70, "code": 615.31, "english": 483.17},
+      "c8": {"chinese": 835.94, "code": 934.69, "english": 789.06},
+      "c10": {"chinese": 1002.97, "code": 998.18, "english": 862.51}
+    },
+    "cand4_repeat1": {
+      "c1": {
+        "chinese": {"tps": 292.58, "ttft_ms": 164.0, "eff": 2.575},
+        "code": {"tps": 349.01, "ttft_ms": 165.2, "eff": 3.148},
+        "english": {"tps": 280.68, "ttft_ms": 165.7, "eff": 2.537}
+      },
+      "c4": {"chinese": 547.78, "code": 642.45, "english": 519.02},
+      "c8": {"chinese": 883.63, "code": 963.33, "english": 870.34},
+      "c10": {"chinese": 998.66, "code": 1150.78, "english": 964.75}
+    },
+    "cand4_repeat2": {
+      "c1": {
+        "chinese": {"tps": 291.67, "ttft_ms": 164.4, "eff": 2.583},
+        "code": {"tps": 346.64, "ttft_ms": 165.7, "eff": 3.131},
+        "english": {"tps": 287.17, "ttft_ms": 165.1, "eff": 2.592}
+      },
+      "c4": {"chinese": 551.60, "code": 648.36, "english": 525.59},
+      "c8": {"chinese": 919.27, "code": 1029.95, "english": 901.34},
+      "c10": {"chinese": 1008.71, "code": 1133.89, "english": 976.13}
+    }
+  },
+  "short_prompt_t1_c1": {
+    "note": "Default production sampling (temperature=1.0, top_p=1.0) C1 decode speed compared with prior unoptimized TP4xPP2 reference.",
+    "historical_baseline_tps": {"chinese": 243.4, "code": 299.7, "english": 239.7},
+    "cand4_tps": {"chinese": 283.80, "code": 342.88, "english": 270.15},
+    "short_quality_t1": {"passed": 28, "total": 30}
+  },
+  "cold_prefill_single": {
+    "protocol": "Unique salted prompts, zero prefix-cache hits, random fact retrieval required.",
+    "tokens_163k": {
+      "baseline_median_s": 9.395,
+      "cand4_repeat1_median_s": 5.366,
+      "cand4_repeat2_median_s": 5.369,
+      "cand4_gpu_warm_ttft_s": 0.547,
+      "passed": true
+    },
+    "tokens_1m": {
+      "baseline_median_s": 61.242,
+      "cand4_repeat1_median_s": 36.230,
+      "cand4_repeat2_median_s": 36.165,
+      "passed": true
+    }
+  },
+  "capacity_10x1m": {
+    "passed": true,
+    "sessions": 10,
+    "prompt_tokens_each": 1000004,
+    "cold_prefix_hits": 0,
+    "waiting_during_hold": 0,
+    "preemptions": 0,
+    "retrieval_passed": 10,
+    "hold_duration_s": 60.14,
+    "aggregate_decode_tps": 571.02,
+    "per_stream_min_tps": 53.29,
+    "per_stream_max_tps": 64.12,
+    "cold_ttft_min_s": 123.59,
+    "cold_ttft_median_s": 267.25,
+    "cold_ttft_max_s": 374.15,
+    "baseline_20261114_ttft_min_med_max_s": [233.5, 465.5, 595.6],
+    "cleanup_complete": true
+  },
+  "historical_capacity_24x1m_20261109": {
+    "passed": true,
+    "sessions": 24,
+    "prompt_tokens_each": 1000004,
+    "cold_prefix_hits": 0,
+    "waiting_during_hold": 0,
+    "preemptions": 0,
+    "retrieval_passed": 24,
+    "hold_duration_s": 60.18,
+    "aggregate_decode_tps": 755.09,
+    "per_stream_min_tps": 26.66,
+    "per_stream_max_tps": 35.60,
+    "cold_ttft_median_s": 831.47,
+    "cold_ttft_max_s": 1439.22,
+    "note": "Archived 2026-11-09 24-session simultaneous capacity proof under the same 36 GiB/GPU (288 GiB total) FP8 KV and 24-slot envelope."
+  },
+  "single_1m_hold": {
+    "passed": true,
+    "hold_duration_s": 60.67,
+    "steady_decode_tps": 388.80,
+    "cold_prefix_hits": 0,
+    "note": "Different prompt/output distribution from short-prompt benchmarks; not comparable as a short-input speedup."
+  },
+  "mixed_c10x128k_plus_1m": {
+    "passed": true,
+    "cold_prefix_hits": 0,
+    "baseline_20261109": {
+      "baseline_window_agg_tps": 909.81,
+      "competing_prefill_agg_tps": 159.33,
+      "new_million_ttft_s": 62.95,
+      "recovery_window_agg_tps": 991.06
+    },
+    "cand4_20261122": {
+      "baseline_window_agg_tps": 1033.56,
+      "competing_prefill_agg_tps": 190.71,
+      "new_million_ttft_s": 55.39,
+      "recovery_window_agg_tps": 1102.00,
+      "cached_context_checks_passed": 10,
+      "cached_context_checks_total": 10
+    }
+  },
+  "wo_a_microbench_tp4": {
+    "shape": "groups=2, N=2048, K=4096 on RTX PRO 6000 Blackwell",
+    "speedup_fp8_gemv_over_bf16_bmm": {
+      "T6": 2.00,
+      "T12": 2.09,
+      "T24": 1.56,
+      "T32": 1.50,
+      "T40": 1.33,
+      "T48": 1.24,
+      "T56": 0.92
+    },
+    "selected_cutoff_max_t": 48
+  },
+  "qualification": {
+    "gsm8k_200_1024_budget": {"passed": 197, "total": 200, "truncated": 0, "failed_indices_zero_based": [52, 55, 150], "matches_baseline_errors": true},
+    "quality_chat": {"passed": 28, "total": 30},
+    "quality_low": {"passed": 30, "total": 30},
+    "quality_batch_chat_c10": {"passed": 28, "total": 30},
+    "quality_batch_low_c10": {"passed": 30, "total": 30},
+    "production_quality_t1": {"passed": 83, "total": 90, "gate_min": 82},
+    "application_checks": {"passed": 10, "total": 10},
+    "short_vision": {"passed": 2, "total": 2},
+    "long_quality": {"passed": 12, "total": 12},
+    "long_vision": {"passed": 4, "total": 4},
+    "public_https_acceptance": {"passed": 10, "total": 10},
+    "public_cold_cancel": {"passed": 3, "total": 3},
+    "post_promotion_three_protocol_check": {"chat": true, "messages_literal_tokens": true, "responses_custom_tool": true}
+  },
+  "rejected_candidates": [
+    {
+      "name": "P2P_AR_FUSED_MAX_ROWS=32",
+      "outcome": "rejected",
+      "reason": "One-shot PCIe push congested above M=8, regressing C4/C8 decode by 5-14%. Kept at 8."
+    },
+    {
+      "name": "VLLM_MOET_MOE_MEGA=1",
+      "outcome": "rejected",
+      "reason": "Microbench measured 162.85 us vs 160.95 us separate launch (+1.9 us/layer slower). Kept at 0."
+    },
+    {
+      "name": "max_num_batched_tokens=16384",
+      "outcome": "rejected",
+      "reason": "1M cold prefill TTFT regressed from 56.48 s to 59.34 s. Reverted to 8192."
+    },
+    {
+      "name": "cand5-ws19-ws23-mxfp8tune",
+      "outcome": "rejected",
+      "reason": "Eliminated FlashInfer autotune warnings and trimmed 1M cold TTFT by 0.21 s (35.94 s vs 36.17 s), but C1 slowed ~0.9% and long_quality failed 1/12 (id=5 1M non-thinking sum produced 10466610 instead of 1046610 on the same prompt Cand4 passed)."
+    },
+    {
+      "name": "cpu_ram_l2_kv_offload_connector",
+      "outcome": "not_enabled",
+      "reason": "Refused alongside PREFILL_PIPE=2 (historically +31% 163K cold prefill regression), replicated_layout is restricted to pp_size==1, NUMA 0 is occupied by ~189 GiB CPU Engram, and 36 GiB/GPU already holds 24x1M contexts in GPU VRAM."
+    }
+  ]
+}
